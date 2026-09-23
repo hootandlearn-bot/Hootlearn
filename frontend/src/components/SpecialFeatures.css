@@ -17,7 +17,7 @@
   background-position: center;
   background-repeat: repeat;
   mix-blend-mode: multiply;
-  opacity: 0.6;
+  opacity: 0.12; /* Reduced from 0.6 to a subtle watermark */
   z-index: 0;
   pointer-events: none;
 }

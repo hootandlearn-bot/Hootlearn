@@ -16,7 +16,7 @@
   background-size: cover;
   background-position: center;
   mix-blend-mode: multiply;
-  opacity: 0.8;
+  opacity: 0.15; /* Reduced from 0.8 to a subtle watermark */
   z-index: 0;
   pointer-events: none;
 }
@@ -26,8 +26,10 @@
   z-index: 10;
   max-width: 1200px;
   margin: 0 auto;
-  background-color: rgba(255, 255, 255, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.85); /* Much thicker frosted glass for readability */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 32px;
   padding: 50px;
   display: grid;
@@ -128,7 +130,8 @@
 
 /* Vision Column */
 .vision-card {
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 24px;
   padding: 32px;

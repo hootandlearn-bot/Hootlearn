@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './AdminLogin.css';
 
 const AdminLogin = () => {
@@ -41,6 +41,9 @@ const AdminLogin = () => {
   return (
     <div className="admin-login-container">
       <div className="admin-login-box">
+        <Link to="/" style={{ display: 'inline-block', marginBottom: '20px', color: '#64748b', textDecoration: 'none', fontWeight: '600', fontSize: '0.9rem' }}>
+          &larr; Back to Home
+        </Link>
         <div className="admin-login-header">
           <img src="/logo.jpeg" alt="HOOT Logo" className="admin-logo" />
           <h2>Admin Portal</h2>
