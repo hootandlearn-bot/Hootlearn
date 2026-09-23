@@ -10,7 +10,6 @@ const HeroSection = () => {
         
         {/* Floating Background Sketch Elements - breaking out of the box */}
         <div className="hero-decorations">
-          <img src="/assets/hero_owl_sketch.jpg" alt="Owl Sketch" className="floating-element owl-sketch" />
           <Cloud size={90} className="floating-element cloud-1" strokeWidth={1} />
           <Cloud size={140} className="floating-element cloud-2" strokeWidth={1} />
           <Star size={45} className="floating-element star-1" strokeWidth={1.5} />

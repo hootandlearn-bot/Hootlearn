@@ -166,17 +166,6 @@
 .star-2 { top: 75%; left: 15%; color: #eab308; opacity: 0.25; animation: floatY 8s ease-in-out infinite reverse; }
 .rocket-1 { top: -5%; left: 65%; color: #ef4444; opacity: 0.2; animation: floatY 6s ease-in-out infinite; }
 
-.owl-sketch {
-  width: 130px;
-  height: auto;
-  top: -2%;
-  right: 25%;
-  opacity: 0.8;
-  mix-blend-mode: multiply;
-  filter: contrast(1.1) brightness(1.05);
-  animation: floatY 8s ease-in-out infinite;
-}
-
 @media (max-width: 992px) {
   .hero-playground {
     flex-direction: column;
@@ -193,13 +182,15 @@
   }
   .hero-child-anchor {
     width: 100%;
-    margin-top: -40px;
+    margin-top: 20px;
+    justify-content: center;
   }
   .hero-main-img {
     width: 100%;
+    max-width: 500px;
     height: auto;
-    margin-right: 0;
-    margin-bottom: 0;
+    margin: 0 auto;
+    object-position: center bottom;
   }
 }
 
@@ -242,13 +233,8 @@
   .cloud-2, .rocket-1, .star-2 {
     display: none;
   }
-  .owl-sketch {
-    width: 90px;
-    top: -2%;
-    right: 5%;
-  }
   .hero-main-img {
-    width: 115%; /* Slight breakout horizontally on mobile */
-    margin-bottom: -10px;
+    width: 100%;
+    margin-bottom: 0px;
   }
 }
