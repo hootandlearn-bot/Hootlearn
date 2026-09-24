@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { BookOpen, Calendar, Mail, Briefcase, Video, GraduationCap, LogOut, Search, Folder, Menu } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import ResourceGrid from '../components/ResourceGrid';
@@ -17,8 +17,10 @@ const ICON_MAP = {
 };
 
 const Dashboard = () => {
-  const [activeSection, setActiveSection] = useState('');
-  const [activeFolderId, setActiveFolderId] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeSection = searchParams.get('section') || '';
+  const activeFolderId = searchParams.get('folder') || null;
+
   const [selectedPdf, setSelectedPdf] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -43,7 +45,7 @@ const Dashboard = () => {
         if (catRes.ok) {
           const cats = await catRes.json();
           setCategories(cats);
-          if (cats.length > 0 && !activeSection) setActiveSection(cats[0].slug);
+          if (cats.length > 0 && !activeSection) setSearchParams({ section: cats[0].slug });
         }
 
         const folRes = await fetch(`${import.meta.env.VITE_API_URL}/api/folders`);
@@ -84,7 +86,7 @@ const Dashboard = () => {
     };
     fetchLiveResources();
 
-    // Global Anti-Piracy logic
+    // Global Anti-Piracy logic (ENABLED FOR PROD)
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && ['p', 's', 'c'].includes(e.key.toLowerCase())) {
         e.preventDefault();
@@ -182,7 +184,7 @@ const Dashboard = () => {
   };
 
   const handleFolderClick = (folderId) => {
-    setActiveFolderId(folderId);
+    setSearchParams({ section: activeSection, folder: folderId });
   };
 
   const handleLogout = () => {
@@ -211,8 +213,7 @@ const Dashboard = () => {
           isOpen={isMobileMenuOpen}
           onClose={() => setIsMobileMenuOpen(false)}
           onSelect={(id) => { 
-            setActiveSection(id); 
-            setActiveFolderId(null); 
+            setSearchParams({ section: id }); 
             setSearchQuery(''); 
             setIsMobileMenuOpen(false);
           }} 
@@ -260,7 +261,7 @@ const Dashboard = () => {
 
           <div className="dash-content">
             {activeFolderId && !searchQuery.trim() && (
-              <button onClick={() => setActiveFolderId(null)} className="back-btn" style={{ marginBottom: '20px', padding: '8px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', color: '#475569' }}>
+              <button onClick={() => setSearchParams({ section: activeSection })} className="back-btn" style={{ marginBottom: '20px', padding: '8px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', color: '#475569' }}>
                 ⬅ Back to {currentSectionDetails?.label}
               </button>
             )}
@@ -318,7 +319,30 @@ const Dashboard = () => {
             </div>
             <div style={{ flex: 1, position: 'relative' }}>
               {selectedPdf.fileUrl ? (
-                <PdfViewer documentData={selectedPdf} onClose={() => setSelectedPdf(null)} />
+                (() => {
+                  const urlWithoutQuery = selectedPdf.fileUrl.split('?')[0].toLowerCase();
+                  if (urlWithoutQuery.endsWith('.doc') || urlWithoutQuery.endsWith('.docx')) {
+                    return (
+                      <iframe 
+                        src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(selectedPdf.fileUrl)}`} 
+                        width="100%" 
+                        height="100%" 
+                        frameBorder="0"
+                        title="Word Document Viewer"
+                      >
+                        This is an embedded <a target="_blank" href="http://office.com" rel="noreferrer">Microsoft Office</a> document.
+                      </iframe>
+                    );
+                  }
+                  if (urlWithoutQuery.match(/\.(jpeg|jpg|gif|png|webp)$/i)) {
+                    return (
+                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0f172a' }}>
+                        <img src={selectedPdf.fileUrl} alt={selectedPdf.title} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                      </div>
+                    );
+                  }
+                  return <PdfViewer documentData={selectedPdf} onClose={() => setSelectedPdf(null)} />;
+                })()
               ) : (
                 <div className="pdf-viewer-placeholder">
                   <p>📄 Coming Soon!</p>

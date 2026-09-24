@@ -375,20 +375,21 @@ const AdminDashboard = () => {
                   
                   <div className="form-row-2" style={{ marginTop: '20px' }}>
                     <div className="input-group">
-                      <label>Download Permissions</label>
+                      <label>File Type & Permissions</label>
                       <select value={actionType} onChange={e => setActionType(e.target.value)}>
-                        <option value="flipbook">View Only (Protected Flipbook)</option>
+                        <option value="flipbook">PDF (Protected Flipbook)</option>
                         {categories.find(c => c.slug === category)?.allowDownload && (
-                          <option value="download">Downloadable PDF</option>
+                          <option value="download">PDF (Downloadable)</option>
                         )}
                         <option value="video">Video Player (Non-Downloadable)</option>
+                        <option value="View">Word Document (.docx / .doc)</option>
                       </select>
                     </div>
                   </div>
 
                   <div className="input-group file-drop-zone">
-                    <label>Upload File (PDF or MP4)</label>
-                    <input type="file" onChange={e => setFile(e.target.files[0])} />
+                    <label>Upload File (PDF, MP4, or Word Doc)</label>
+                    <input type="file" accept=".pdf,.mp4,.mov,.doc,.docx" onChange={e => setFile(e.target.files[0])} />
                   </div>
 
                   <button type="submit" className="primary-action-btn" disabled={uploading}>

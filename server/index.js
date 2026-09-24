@@ -285,7 +285,7 @@ app.delete('/api/admin/folders/:id', requireAdmin, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-// --- 3. RESOURCE ROUTES ---
+const signedUrlCache = new Map();
 
 // GET all resources (Publicly visible metadata, but protected URLs)
 app.get('/api/resources', optionalUser, async (req, res) => {
@@ -307,14 +307,28 @@ app.get('/api/resources', optionalUser, async (req, res) => {
 
     // If S3 is active and user IS logged in, replace S3 keys with temporary pre-signed URLs
     if (s3Client) {
+      const now = Date.now();
       resources = await Promise.all(resources.map(async (resItem) => {
         if (resItem.fileUrl && !resItem.fileUrl.startsWith('http')) {
-          const command = new GetObjectCommand({
-            Bucket: process.env.AWS_BUCKET_NAME,
-            Key: resItem.fileUrl
-          });
-          const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 43200 });
-          resItem.fileUrl = signedUrl;
+          const cached = signedUrlCache.get(resItem.fileUrl);
+          
+          if (cached && cached.expiresAt > now) {
+            resItem.fileUrl = cached.url;
+          } else {
+            const command = new GetObjectCommand({
+              Bucket: process.env.AWS_BUCKET_NAME,
+              Key: resItem.fileUrl
+            });
+            const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 90000 }); // 25 hours
+            
+            // Cache it for 24 hours (86400000 ms) to be safe
+            signedUrlCache.set(resItem.fileUrl, {
+              url: signedUrl,
+              expiresAt: now + 86400000
+            });
+            
+            resItem.fileUrl = signedUrl;
+          }
         }
         return resItem;
       }));

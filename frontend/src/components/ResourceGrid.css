@@ -89,6 +89,9 @@
 .gradient-teal { background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%); }
 .gradient-green { background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%); }
 .default-bg { background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%); }
+.word-bg { background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%); }
+.pdf-bg { background: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%); }
+.video-bg { background: linear-gradient(135deg, #A855F7 0%, #9333EA 100%); }
 .gradient-purple { background: linear-gradient(135deg, #A855F7 0%, #9333EA 100%); }
 .gradient-indigo { background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%); }
 .gradient-red { background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); }

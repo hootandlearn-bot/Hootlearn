@@ -9,8 +9,37 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url,
 ).toString();
 
+const LoadingProgress = ({ progress }) => {
+  const [textIndex, setTextIndex] = useState(0);
+  const loadingTexts = [
+    "Opening book...",
+    "Fetching pages...",
+    "Preparing the reader...",
+    "Almost there..."
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTextIndex((prev) => (prev + 1) % loadingTexts.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', padding: '40px' }}>
+      <div style={{ width: '250px', height: '8px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${progress}%`, background: '#3b82f6', transition: 'width 0.2s ease-out' }} />
+      </div>
+      <div style={{ marginTop: '20px', fontSize: '1rem', color: '#64748b', fontWeight: '500' }}>
+        {loadingTexts[textIndex]}
+      </div>
+    </div>
+  );
+};
+
 const PdfViewer = ({ documentData }) => {
   const [numPages, setNumPages] = useState(null);
+  const [loadProgress, setLoadProgress] = useState(0);
   const [pageWidth, setPageWidth] = useState(
     window.innerWidth > 800 ? 800 : window.innerWidth - 20
   );
@@ -33,7 +62,10 @@ const PdfViewer = ({ documentData }) => {
       <Document 
         file={documentData.fileUrl} 
           onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-          loading={<div className="pdf-loading">Loading Document... 📄</div>}
+          onLoadProgress={({ loaded, total }) => {
+            if (total) setLoadProgress(Math.round((loaded / total) * 100));
+          }}
+          loading={<LoadingProgress progress={loadProgress} />}
           className="pdf-document-wrapper"
         >
           <div className="pdf-reader-layout">
