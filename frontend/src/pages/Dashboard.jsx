@@ -53,16 +53,41 @@ const Dashboard = () => {
           setFolders(await folRes.json());
         }
 
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/resources`, {
+        let res = await fetch(`${import.meta.env.VITE_API_URL}/api/resources`, {
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         });
 
         if (res.status === 401 || res.status === 403) {
           const errorData = await res.json();
-          alert(errorData.error || 'Session expired. Please log in again.');
-          localStorage.removeItem('userToken');
-          navigate('/login');
-          return;
+          if (errorData.code === 'TOKEN_EXPIRED' && token) {
+            try {
+              const refreshRes = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/refresh`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+              });
+              if (refreshRes.ok) {
+                const refreshData = await refreshRes.json();
+                localStorage.setItem('userToken', refreshData.token);
+                // Retry fetch with new token
+                res = await fetch(`${import.meta.env.VITE_API_URL}/api/resources`, {
+                  headers: { 'Authorization': `Bearer ${refreshData.token}` }
+                });
+                if (!res.ok) throw new Error('Retry failed');
+              } else {
+                throw new Error('Refresh failed');
+              }
+            } catch (err) {
+              alert('Session expired. Please log in again.');
+              localStorage.removeItem('userToken');
+              navigate('/login');
+              return;
+            }
+          } else {
+            alert(errorData.error || 'Session expired. Please log in again.');
+            localStorage.removeItem('userToken');
+            navigate('/login');
+            return;
+          }
         }
 
         const data = await res.json();
@@ -87,28 +112,39 @@ const Dashboard = () => {
     fetchLiveResources();
 
     // Global Anti-Piracy logic (ENABLED FOR PROD)
+    const clearClipboard = () => {
+      try {
+        navigator.clipboard.writeText('Screenshots and copying are strictly prohibited on this platform.').catch(() => {});
+      } catch (err) {}
+    };
+
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && ['p', 's', 'c'].includes(e.key.toLowerCase())) {
         e.preventDefault();
+        clearClipboard();
       }
-      if (e.key === 'PrintScreen' || e.code === 'PrintScreen') {
-        navigator.clipboard.writeText('').catch(() => {});
+      // Catch PrintScreen, Mac Command+Shift+3/4/5, Windows Win+Shift+S
+      if (e.key === 'PrintScreen' || e.code === 'PrintScreen' || (e.metaKey && e.shiftKey)) {
         setIsObscured(true);
-        setTimeout(() => setIsObscured(false), 3000);
+        clearClipboard();
+        setTimeout(() => setIsObscured(false), 4000);
       }
     };
 
     const handleKeyUp = (e) => {
       if (e.key === 'PrintScreen' || e.code === 'PrintScreen') {
-        navigator.clipboard.writeText('').catch(() => {});
         setIsObscured(true);
-        setTimeout(() => setIsObscured(false), 3000);
+        clearClipboard();
+        setTimeout(() => setIsObscured(false), 4000);
       }
     };
 
     const handleDragStart = (e) => e.preventDefault();
     
-    const handleBlur = () => setIsObscured(true);
+    const handleBlur = () => {
+      setIsObscured(true);
+      clearClipboard();
+    };
     const handleFocus = () => setIsObscured(false);
     const handleVisibilityChange = () => {
       if (document.hidden) setIsObscured(true);

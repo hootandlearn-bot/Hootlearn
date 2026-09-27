@@ -123,6 +123,40 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+// Token Refresh Route
+app.post('/api/auth/refresh', async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'No token provided' });
+  }
+  
+  const token = authHeader.split(' ')[1];
+  try {
+    // Ignore expiration so we can read an expired token safely
+    const decoded = jwt.verify(token, JWT_SECRET, { ignoreExpiration: true });
+    
+    if (decoded.role === 'admin') {
+      const newToken = jwt.sign({ id: decoded.id, role: 'admin' }, JWT_SECRET, { expiresIn: '24h' });
+      return res.json({ token: newToken });
+    }
+    
+    if (decoded.role === 'user') {
+      const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+      if (!user) return res.status(401).json({ error: 'User not found' });
+      
+      if (new Date() > new Date(user.expiresAt)) {
+        return res.status(403).json({ error: 'Your access has expired.' });
+      }
+      
+      const newToken = jwt.sign({ id: user.id, role: 'user' }, JWT_SECRET, { expiresIn: '24h' });
+      return res.json({ token: newToken });
+    }
+    
+    return res.status(401).json({ error: 'Invalid token role' });
+  } catch (err) {
+    res.status(401).json({ error: 'Invalid token' });
+  }
+});
 
 // --- 2. MIDDLEWARES ---
 
@@ -176,6 +210,9 @@ const requireUser = async (req, res, next) => {
     req.user = user;
     next();
   } catch (err) {
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ error: 'Token expired', code: 'TOKEN_EXPIRED' });
+    }
     res.status(401).json({ error: 'Invalid or expired token' });
   }
 };
@@ -198,11 +235,16 @@ const optionalUser = async (req, res, next) => {
       const user = await prisma.user.findUnique({ where: { id: decoded.id } });
       if (user && new Date() <= new Date(user.expiresAt)) {
         req.user = user;
+      } else {
+        return res.status(401).json({ error: 'User expired or not found' });
       }
     }
     next();
   } catch (err) {
-    next();
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ error: 'Token expired', code: 'TOKEN_EXPIRED' });
+    }
+    return res.status(401).json({ error: 'Session expired. Please log in again.' });
   }
 };
 

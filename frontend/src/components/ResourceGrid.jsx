@@ -40,12 +40,15 @@ const ResourceCard = ({ res, onOpen, getActionDetails }) => {
             <span className="rg-spine" />
             <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               {isWord && <FileText size={64} className="rg-icon" style={{ opacity: 0.95, color: '#ffffff' }} />}
-              {isPdf && <BookOpen size={64} className="rg-icon" style={{ opacity: 0.95, color: '#ffffff' }} />}
+              {isPdf && <FileText size={64} className="rg-icon" style={{ opacity: 0.95, color: '#ffffff' }} />}
               {isVideo && <Play size={64} className="rg-icon" style={{ opacity: 0.95, color: '#ffffff' }} />}
               {isMissing && <FileText size={64} className="rg-icon" style={{ opacity: 0.5, color: '#ffffff' }} />}
               
               {isWord && (
                 <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -35%)', color: '#1D4ED8', fontWeight: '900', fontSize: '26px', background: 'white', padding: '0px 6px', borderRadius: '4px' }}>W</div>
+              )}
+              {isPdf && (
+                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -35%)', color: '#0284C7', fontWeight: '900', fontSize: '18px', background: 'white', padding: '2px 6px', borderRadius: '4px' }}>PDF</div>
               )}
             </div>
             
