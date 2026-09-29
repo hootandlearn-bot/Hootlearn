@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { BookOpen, Calendar, Mail, Briefcase, Video, GraduationCap, LogOut, Search, Folder, Menu } from 'lucide-react';
+import { BookOpen, Calendar, Mail, Briefcase, Video, GraduationCap, LogOut, Search, Folder, Menu, LayoutGrid, List } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import ResourceGrid from '../components/ResourceGrid';
 import PdfViewer from '../components/PdfViewer';
@@ -20,6 +20,7 @@ const Dashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeSection = searchParams.get('section') || '';
   const activeFolderId = searchParams.get('folder') || null;
+  const [viewMode, setViewMode] = useState('grid');
 
   const [selectedPdf, setSelectedPdf] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
@@ -32,7 +33,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('userToken');
+    const token = sessionStorage.getItem('userToken');
     if (!token) {
       navigate('/login?redirect=/dashboard');
       return;
@@ -67,7 +68,7 @@ const Dashboard = () => {
               });
               if (refreshRes.ok) {
                 const refreshData = await refreshRes.json();
-                localStorage.setItem('userToken', refreshData.token);
+                sessionStorage.setItem('userToken', refreshData.token);
                 // Retry fetch with new token
                 res = await fetch(`${import.meta.env.VITE_API_URL}/api/resources`, {
                   headers: { 'Authorization': `Bearer ${refreshData.token}` }
@@ -78,13 +79,13 @@ const Dashboard = () => {
               }
             } catch (err) {
               alert('Session expired. Please log in again.');
-              localStorage.removeItem('userToken');
+              sessionStorage.removeItem('userToken');
               navigate('/login');
               return;
             }
           } else {
             alert(errorData.error || 'Session expired. Please log in again.');
-            localStorage.removeItem('userToken');
+            sessionStorage.removeItem('userToken');
             navigate('/login');
             return;
           }
@@ -118,6 +119,10 @@ const Dashboard = () => {
       } catch (err) {}
     };
 
+    const handleInteraction = () => {
+      setIsObscured(false);
+    };
+
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && ['p', 's', 'c'].includes(e.key.toLowerCase())) {
         e.preventDefault();
@@ -127,7 +132,8 @@ const Dashboard = () => {
       if (e.key === 'PrintScreen' || e.code === 'PrintScreen' || (e.metaKey && e.shiftKey)) {
         setIsObscured(true);
         clearClipboard();
-        setTimeout(() => setIsObscured(false), 4000);
+      } else {
+        setIsObscured(false);
       }
     };
 
@@ -135,7 +141,6 @@ const Dashboard = () => {
       if (e.key === 'PrintScreen' || e.code === 'PrintScreen') {
         setIsObscured(true);
         clearClipboard();
-        setTimeout(() => setIsObscured(false), 4000);
       }
     };
 
@@ -155,6 +160,8 @@ const Dashboard = () => {
     window.addEventListener('dragstart', handleDragStart);
     window.addEventListener('blur', handleBlur);
     window.addEventListener('focus', handleFocus);
+    window.addEventListener('mousedown', handleInteraction);
+    window.addEventListener('touchstart', handleInteraction);
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
@@ -163,6 +170,8 @@ const Dashboard = () => {
       window.removeEventListener('dragstart', handleDragStart);
       window.removeEventListener('blur', handleBlur);
       window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('mousedown', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -175,8 +184,15 @@ const Dashboard = () => {
   let activeResources;
   let visibleFolders = [];
 
+  let sourceResources = allResources;
+  if (activeFolderId) {
+    sourceResources = currentCategoryResources.filter(r => r.folderId === activeFolderId);
+  } else if (activeSection) {
+    sourceResources = currentCategoryResources;
+  }
+
   if (searchQuery.trim() !== '') {
-    activeResources = allResources.filter(res => res.title.toLowerCase().includes(searchQuery.toLowerCase()));
+    activeResources = sourceResources.filter(res => res.title.toLowerCase().includes(searchQuery.toLowerCase()));
   } else {
     if (activeFolderId) {
       activeResources = currentCategoryResources.filter(r => r.folderId === activeFolderId);
@@ -201,7 +217,7 @@ const Dashboard = () => {
       : `${currentSectionDetails?.label || 'Library'}`;
 
   const handleResourceClick = (res) => {
-    if (!localStorage.getItem('userToken')) {
+    if (!sessionStorage.getItem('userToken')) {
       navigate('/login?redirect=/dashboard');
       return;
     }
@@ -224,7 +240,7 @@ const Dashboard = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('userToken');
+    sessionStorage.removeItem('userToken');
     navigate('/login');
   };
 
@@ -253,7 +269,7 @@ const Dashboard = () => {
             setSearchQuery(''); 
             setIsMobileMenuOpen(false);
           }} 
-          isLoggedIn={!!localStorage.getItem('userToken')}
+          isLoggedIn={!!sessionStorage.getItem('userToken')}
           onLogout={handleLogout}
           onLogin={() => navigate('/login?redirect=/dashboard')}
         />
@@ -274,6 +290,22 @@ const Dashboard = () => {
               <p>{searchQuery.trim() !== '' ? `Showing all resources matching "${searchQuery}"` : 'Select a book or document to read.'}</p>
             </div>
             <div className="dash-header-right">
+              <div className="view-toggle-wrapper">
+                <button 
+                  onClick={() => setViewMode('grid')} 
+                  className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                  title="Grid View"
+                >
+                  <LayoutGrid size={18} />
+                </button>
+                <button 
+                  onClick={() => setViewMode('list')} 
+                  className={`view-toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
+                  title="List View"
+                >
+                  <List size={18} />
+                </button>
+              </div>
               <div className="dash-search-box">
                 <Search size={18} className="search-icon" />
                 <input 
@@ -283,7 +315,7 @@ const Dashboard = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              {localStorage.getItem('userToken') ? (
+              {sessionStorage.getItem('userToken') ? (
                 <button onClick={handleLogout} className="student-logout-btn">
                   <LogOut size={18} /> Logout
                 </button>
@@ -319,7 +351,7 @@ const Dashboard = () => {
             {(activeResources.length > 0 || searchQuery.trim()) && (
               <div>
                 {visibleFolders.length > 0 && <h3 style={{ marginBottom: '16px', color: '#1e293b', fontSize: '1.2rem' }}>Files</h3>}
-                <ResourceGrid resources={activeResources} onOpen={handleResourceClick} />
+                <ResourceGrid resources={activeResources} onOpen={handleResourceClick} viewMode={viewMode} />
               </div>
             )}
             
@@ -333,32 +365,40 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* PDF Flipbook Modal Overlay */}
+      {/* PDF / Document Modal Overlay */}
       {selectedPdf && (
         <div className="pdf-modal-overlay" onClick={() => setSelectedPdf(null)}>
           <div className="pdf-modal-content" onClick={e => e.stopPropagation()}>
-            <div className="pdf-modal-header">
-              <h3>{selectedPdf.title}</h3>
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                {selectedPdf.actionType === 'download' && (
-                  <a 
-                    href={selectedPdf.fileUrl} 
-                    download={`${selectedPdf.title}.pdf`} 
-                    className="pdf-download-btn"
-                    style={{ background: '#10b981', color: 'white', padding: '6px 16px', borderRadius: '6px', textDecoration: 'none', fontSize: '14px', fontWeight: 'bold' }}
-                  >
-                    ⬇ Download
-                  </a>
-                )}
-                <button className="pdf-close-btn" onClick={() => setSelectedPdf(null)}>✕</button>
-              </div>
-            </div>
-            <div style={{ flex: 1, position: 'relative' }}>
-              {selectedPdf.fileUrl ? (
-                (() => {
-                  const urlWithoutQuery = selectedPdf.fileUrl.split('?')[0].toLowerCase();
-                  if (urlWithoutQuery.endsWith('.doc') || urlWithoutQuery.endsWith('.docx')) {
-                    return (
+            {/* If it's a regular document or image, show the outer header. If PDF, PdfViewer handles it. */}
+            {(() => {
+              if (!selectedPdf.fileUrl) return null;
+              const urlWithoutQuery = selectedPdf.fileUrl.split('?')[0].toLowerCase();
+              const isPdf = !urlWithoutQuery.endsWith('.doc') && !urlWithoutQuery.endsWith('.docx') && !urlWithoutQuery.match(/\.(jpeg|jpg|gif|png|webp)$/i);
+              
+              return (
+                <>
+                  {!isPdf && (
+                    <div className="pdf-modal-header">
+                      <h3>{selectedPdf.title}</h3>
+                      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                        {selectedPdf.actionType === 'download' && (
+                          <a 
+                            href={selectedPdf.fileUrl} 
+                            download={selectedPdf.title}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="pdf-download-btn"
+                          >
+                            ⬇ Download
+                          </a>
+                        )}
+                        <button className="pdf-close-btn" onClick={() => setSelectedPdf(null)}>✕</button>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div style={{ flex: 1, position: 'relative' }}>
+                    {urlWithoutQuery.endsWith('.doc') || urlWithoutQuery.endsWith('.docx') ? (
                       <iframe 
                         src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(selectedPdf.fileUrl)}`} 
                         width="100%" 
@@ -368,24 +408,29 @@ const Dashboard = () => {
                       >
                         This is an embedded <a target="_blank" href="http://office.com" rel="noreferrer">Microsoft Office</a> document.
                       </iframe>
-                    );
-                  }
-                  if (urlWithoutQuery.match(/\.(jpeg|jpg|gif|png|webp)$/i)) {
-                    return (
+                    ) : urlWithoutQuery.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
                       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0f172a' }}>
                         <img src={selectedPdf.fileUrl} alt={selectedPdf.title} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
                       </div>
-                    );
-                  }
-                  return <PdfViewer documentData={selectedPdf} onClose={() => setSelectedPdf(null)} />;
-                })()
-              ) : (
+                    ) : (
+                      <PdfViewer 
+                        documentData={selectedPdf} 
+                        onClose={() => setSelectedPdf(null)} 
+                      />
+                    )}
+                  </div>
+                </>
+              );
+            })()}
+            
+            {!selectedPdf.fileUrl && (
+              <div style={{ flex: 1, position: 'relative' }}>
                 <div className="pdf-viewer-placeholder">
                   <p>📄 Coming Soon!</p>
-                  <span>This sample doesn't have a PDF attached yet.</span>
+                  <span>This sample doesn't have a file attached yet.</span>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       )}

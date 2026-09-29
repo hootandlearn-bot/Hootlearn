@@ -53,7 +53,7 @@ const ResourceCard = ({ res, onOpen, getActionDetails }) => {
             </div>
             
             {/* Top Right Action Icon */}
-            <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(15, 23, 42, 0.75)', padding: '8px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', backdropFilter: 'blur(4px)' }}>
+            <div className="rg-top-right-icon" style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(15, 23, 42, 0.75)', padding: '8px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', backdropFilter: 'blur(4px)' }}>
               {isMissing ? <FileText size={18} /> : action.icon && <div style={{ transform: 'scale(0.5)', display: 'flex' }}>{action.icon}</div>}
             </div>
           </>
@@ -68,7 +68,7 @@ const ResourceCard = ({ res, onOpen, getActionDetails }) => {
   );
 };
 
-const ResourceGrid = ({ resources, onOpen }) => {
+const ResourceGrid = ({ resources, onOpen, viewMode = 'grid' }) => {
   if (resources.length === 0) {
     return (
       <div className="rg-empty">
@@ -90,7 +90,7 @@ const ResourceGrid = ({ resources, onOpen }) => {
   };
 
   return (
-    <div className="rg-grid">
+    <div className={`rg-grid ${viewMode === 'list' ? 'list-view' : ''}`}>
       {resources.map((res) => (
         <ResourceCard key={res.id} res={res} onOpen={onOpen} getActionDetails={getActionDetails} />
       ))}

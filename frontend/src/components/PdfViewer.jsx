@@ -37,79 +37,140 @@ const LoadingProgress = ({ progress }) => {
   );
 };
 
-const PdfViewer = ({ documentData }) => {
+const PdfViewer = ({ documentData, onClose }) => {
   const [numPages, setNumPages] = useState(null);
   const [loadProgress, setLoadProgress] = useState(0);
-  const [pageWidth, setPageWidth] = useState(
-    window.innerWidth > 800 ? 800 : window.innerWidth - 20
-  );
+  const [viewMode, setViewMode] = useState('thumbnails');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageWidth, setPageWidth] = useState(400);
 
   useEffect(() => {
     const handleResize = () => {
-      setPageWidth(window.innerWidth > 800 ? 800 : window.innerWidth - 20);
+      const w = window.innerWidth;
+      let newWidth = (w - 150) / 2;
+      if (newWidth > 600) newWidth = 600;
+      if (w < 768) newWidth = w - 80;
+      setPageWidth(newWidth);
     };
+    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleScrollToPage = (pageNumber) => {
-    const el = document.getElementById(`pdf-page-${pageNumber}`);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  const openPage = (pageNum) => {
+    let leftPage;
+    if (pageNum === 1) leftPage = 1;
+    else if (pageNum % 2 === 0) leftPage = pageNum;
+    else leftPage = pageNum - 1;
+    
+    setCurrentPage(leftPage);
+    setViewMode('reading');
+  };
+
+  const goNext = () => {
+    if (currentPage === 1 && numPages >= 2) setCurrentPage(2);
+    else if (currentPage + 2 <= numPages) setCurrentPage(currentPage + 2);
+  };
+
+  const goPrev = () => {
+    if (currentPage === 2) setCurrentPage(1);
+    else if (currentPage - 2 > 1) setCurrentPage(currentPage - 2);
   };
 
   return (
     <div className="pdf-reader-container">
+      {/* UNIFIED HEADER TOOLBAR */}
+      <div className="pdf-reading-toolbar">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          {viewMode === 'reading' && (
+            <button onClick={() => setViewMode('thumbnails')} className="pdf-back-btn">
+              &larr; Overview
+            </button>
+          )}
+          <h3 className="pdf-header-title">{documentData.title}</h3>
+        </div>
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          {viewMode === 'reading' && numPages && (
+            <div className="pdf-page-indicator">
+              {currentPage === 1 ? 'Page 1' : `Pages ${currentPage} - ${Math.min(currentPage + 1, numPages)}`} of {numPages}
+            </div>
+          )}
+          {documentData.actionType === 'download' && (
+            <a 
+              href={documentData.fileUrl} 
+              download={documentData.title}
+              target="_blank"
+              rel="noreferrer"
+              className="pdf-download-btn-viewer"
+            >
+              &#11015; Download
+            </a>
+          )}
+          <button className="pdf-close-btn-viewer" onClick={onClose}>&#10005;</button>
+        </div>
+      </div>
+
       <Document 
         file={documentData.fileUrl} 
-          onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-          onLoadProgress={({ loaded, total }) => {
-            if (total) setLoadProgress(Math.round((loaded / total) * 100));
-          }}
-          loading={<LoadingProgress progress={loadProgress} />}
-          className="pdf-document-wrapper"
-        >
-          <div className="pdf-reader-layout">
-            {/* Left Sidebar (Thumbnails) */}
-            <div className="pdf-sidebar">
-              {Array.from(new Array(numPages), (el, index) => (
-                <div 
-                  key={`thumb-${index}`} 
-                  className="pdf-thumb-wrapper" 
-                  onClick={() => handleScrollToPage(index + 1)}
-                >
-                  <Page 
-                    pageNumber={index + 1} 
-                    width={100} 
-                    renderTextLayer={false} 
-                    renderAnnotationLayer={false} 
-                    className="pdf-thumb-page"
-                  />
-                  <span className="pdf-thumb-number">{index + 1}</span>
-                </div>
-              ))}
+        onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+        onLoadProgress={({ loaded, total }) => {
+          if (total) setLoadProgress(Math.round((loaded / total) * 100));
+        }}
+        loading={<LoadingProgress progress={loadProgress} />}
+        className="pdf-document-wrapper"
+      >
+        {numPages && (
+          viewMode === 'thumbnails' ? (
+            <div className="pdf-thumbnail-view">
+              <div className="pdf-thumbnail-grid">
+                {Array.from(new Array(numPages), (el, index) => (
+                  <div key={`thumb-${index}`} className="pdf-thumb-card" onClick={() => openPage(index + 1)}>
+                    <Page 
+                      pageNumber={index + 1} 
+                      width={220} 
+                      renderTextLayer={false} 
+                      renderAnnotationLayer={false} 
+                      className="pdf-thumb-img"
+                    />
+                    <div className="pdf-thumb-label">Page {index + 1}</div>
+                  </div>
+                ))}
+              </div>
             </div>
-            
-            {/* Main Reading Area (Continuous Scroll) */}
-            <div className="pdf-main-view">
-              {Array.from(new Array(numPages), (el, index) => (
-                <div 
-                  key={`page-${index}`} 
-                  id={`pdf-page-${index + 1}`} 
-                  className="pdf-full-page"
-                >
-                  <Page 
-                    pageNumber={index + 1} 
-                    width={pageWidth} 
-                    renderTextLayer={false} 
-                    renderAnnotationLayer={false} 
-                    className="pdf-main-page"
-                  />
-                  <div className="pdf-page-divider" />
+          ) : (
+            <div className="pdf-reading-view">
+              
+              <div className="pdf-spread-container">
+                <button className="pdf-nav-btn prev-btn" onClick={goPrev} disabled={currentPage === 1}> &#10094; </button>
+                
+                <div className="pdf-spread-scroll-area">
+                  <div className="pdf-spread">
+                    {currentPage === 1 ? (
+                      <div className="pdf-page-wrapper single-cover">
+                        <Page pageNumber={1} width={pageWidth} renderTextLayer={false} renderAnnotationLayer={false} />
+                      </div>
+                    ) : (
+                      <>
+                        <div className="pdf-page-wrapper left-page">
+                          <Page pageNumber={currentPage} width={pageWidth} renderTextLayer={false} renderAnnotationLayer={false} />
+                        </div>
+                        {currentPage + 1 <= numPages && (
+                          <div className="pdf-page-wrapper right-page">
+                            <Page pageNumber={currentPage + 1} width={pageWidth} renderTextLayer={false} renderAnnotationLayer={false} />
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
-              ))}
+                
+                <button className="pdf-nav-btn next-btn" onClick={goNext} disabled={(currentPage === 1 && numPages < 2) || (currentPage > 1 && currentPage + 2 > numPages)}> &#10095; </button>
+              </div>
             </div>
-          </div>
-        </Document>
+          )
+        )}
+      </Document>
     </div>
   );
 };

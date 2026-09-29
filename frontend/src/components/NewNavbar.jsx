@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import './NewNavbar.css';
 
 const NewNavbar = () => {
-  const userToken = localStorage.getItem('userToken');
+  const userToken = sessionStorage.getItem('userToken');
   const adminToken = localStorage.getItem('adminToken');
   const isLoggedIn = !!userToken || !!adminToken;
   const dashboardRoute = userToken ? '/dashboard' : '/admin';

@@ -4,7 +4,7 @@ import './Navbar.css';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const isLoggedIn = !!localStorage.getItem('userToken') || !!localStorage.getItem('adminToken');
+  const isLoggedIn = !!sessionStorage.getItem('userToken') || !!localStorage.getItem('adminToken');
 
   return (
     <nav className="navbar-fun">

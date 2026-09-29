@@ -29,8 +29,8 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('userToken', data.token);
-        localStorage.setItem('userEmail', email);
+        sessionStorage.setItem('userToken', data.token);
+        sessionStorage.setItem('userEmail', email);
         navigate(redirectPath, { replace: true });
       } else {
         setError(data.error || 'Login failed');
