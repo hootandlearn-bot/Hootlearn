@@ -30,6 +30,7 @@ const Login = () => {
 
       if (response.ok) {
         localStorage.setItem('userToken', data.token);
+        localStorage.setItem('userEmail', email);
         navigate(redirectPath, { replace: true });
       } else {
         setError(data.error || 'Login failed');

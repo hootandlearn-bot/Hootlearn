@@ -123,15 +123,13 @@
 }
 
 .hero-main-img {
-  width: 140%;
-  height: 110%; /* Break out of the top and bottom of the box */
+  width: 100%;
+  height: 100%; 
   max-width: 900px;
   object-fit: contain;
   object-position: bottom right;
   mix-blend-mode: multiply;
   filter: brightness(1.08) contrast(1.15);
-  margin-right: -10%;
-  margin-bottom: -20px; /* Overlap the bottom */
 }
 
 /* Floating Animations */

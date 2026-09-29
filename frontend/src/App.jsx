@@ -21,9 +21,9 @@ const Homepage = () => (
       <HeroSection />
       <FounderSection />
       <SpecialFeatures />
-      <CoreValues />
-      <HootPrograms />
       <AboutSection />
+      <HootPrograms />
+      <CoreValues />
     </main>
     <Footer />
   </>

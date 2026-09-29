@@ -57,7 +57,7 @@ const SpecialFeatures = () => {
           What Makes HOOT Special?
           <span className="title-deco">🌱</span>
         </h2>
-        <p className="special-subtitle">We believe in nurturing the whole child — mind, heart and character.</p>
+        <p className="special-subtitle">We nurture the child, not just the outcome.</p>
       </motion.div>
 
       <motion.div 

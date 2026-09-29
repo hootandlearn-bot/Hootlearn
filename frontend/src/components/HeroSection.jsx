@@ -19,38 +19,28 @@ const HeroSection = () => {
 
         <div className="hero-text-bubble">
           <h1 className="hero-title">
-            The <span className="highlight-red">Transformative</span> Journey <br /> 
-            of Experiential Learning In India
+            Empowering <span className="highlight-red">Teachers</span> to <br /> 
+            Inspire Young Minds
           </h1>
           
-          <p className="hero-subtitle">
-            Take the <span className="highlight-blue">FIRST STEP!</span>
-          </p>
 
-          <Link to="/dashboard" className="hero-btn">
-            Explore Our Programs
-            <span className="arrow">→</span>
-          </Link>
 
-          {/* Feature Badges */}
-          <div className="hero-badges">
-            <div className="hero-badge">
-              <div className="badge-icon"><Puzzle size={24} /></div>
-              <span>Integrated<br/>Curriculum</span>
+
+          <div style={{ width: '100%', maxWidth: '500px', marginTop: '20px' }}>
+            <img src="/assets/explore.jpeg" alt="Hands Mind Heart" className="hero-explore-img" style={{ width: '100%', height: 'auto' }} />
+            <div style={{ display: 'flex', width: '100%', marginTop: '5px' }}>
+              <div style={{ flex: 1, textAlign: 'center', fontWeight: '800', fontSize: '1.2rem', color: '#9333EA', fontFamily: "'Fredoka', sans-serif" }}>Hands</div>
+              <div style={{ flex: 1, textAlign: 'center', fontWeight: '800', fontSize: '1.2rem', color: '#9333EA', fontFamily: "'Fredoka', sans-serif" }}>Mind</div>
+              <div style={{ flex: 1, textAlign: 'center', fontWeight: '800', fontSize: '1.2rem', color: '#9333EA', fontFamily: "'Fredoka', sans-serif" }}>Heart</div>
             </div>
-            <div className="hero-badge">
-              <div className="badge-icon"><Lightbulb size={24} /></div>
-              <span>Experiential<br/>Approach</span>
-            </div>
-            <div className="hero-badge">
-              <div className="badge-icon"><BookOpen size={24} /></div>
-              <span>Interactive<br/>Learning</span>
-            </div>
+            <p style={{ color: '#A855F7', fontSize: '1.1rem', fontStyle: 'italic', textAlign: 'center', marginTop: '10px' }}>
+              Experiences that engage the whole child
+            </p>
           </div>
         </div>
 
         <div className="hero-child-anchor">
-          <img src="/assets/hero_sketch_child.jpg" alt="Whimsical astronaut child" className="hero-main-img" />
+          <img src="/assets/hero_sketch_child.jpeg" alt="Whimsical astronaut child" className="hero-main-img" />
         </div>
 
       </div>

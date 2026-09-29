@@ -36,6 +36,16 @@ const CoreValues = () => {
           </div>
 
           <p className="values-slogan">HOOT — <span className="slogan-highlight">Let's Hoot & Learn!</span></p>
+          
+          <div style={{ marginTop: '30px', fontSize: '1.1rem', color: '#44403c', borderTop: '2px dashed #cbd5e1', paddingTop: '20px' }}>
+            <h4 style={{ fontWeight: 'bold', fontSize: '1.2rem', marginBottom: '10px' }}>Contact Us</h4>
+            <p style={{ margin: '5px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <strong>Email:</strong> <a href="mailto:info@hootandlearn.com" style={{ color: '#0f766e', textDecoration: 'none' }}>info@hootandlearn.com</a>
+            </p>
+            <p style={{ margin: '5px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <strong>Phone:</strong> <a href="tel:+917718096802" style={{ color: '#0f766e', textDecoration: 'none' }}>+91 77180 96802</a>
+            </p>
+          </div>
         </motion.div>
 
         <motion.div 
