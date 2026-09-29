@@ -43,13 +43,20 @@ const PdfViewer = ({ documentData, onClose }) => {
   const [viewMode, setViewMode] = useState('thumbnails');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageWidth, setPageWidth] = useState(400);
+  const [thumbWidth, setThumbWidth] = useState(220);
 
   useEffect(() => {
     const handleResize = () => {
       const w = window.innerWidth;
       let newWidth = (w - 150) / 2;
       if (newWidth > 600) newWidth = 600;
-      if (w < 768) newWidth = w - 80;
+      
+      if (w < 768) {
+        newWidth = w - 40; // less padding on mobile
+        setThumbWidth(140);
+      } else {
+        setThumbWidth(220);
+      }
       setPageWidth(newWidth);
     };
     handleResize();
@@ -128,7 +135,7 @@ const PdfViewer = ({ documentData, onClose }) => {
                   <div key={`thumb-${index}`} className="pdf-thumb-card" onClick={() => openPage(index + 1)}>
                     <Page 
                       pageNumber={index + 1} 
-                      width={220} 
+                      width={thumbWidth} 
                       renderTextLayer={false} 
                       renderAnnotationLayer={false} 
                       className="pdf-thumb-img"
