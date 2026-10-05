@@ -45,6 +45,7 @@ const Dashboard = () => {
         const catRes = await fetch(`${import.meta.env.VITE_API_URL}/api/categories`);
         if (catRes.ok) {
           const cats = await catRes.json();
+          
           setCategories(cats);
           if (cats.length > 0 && !activeSection) setSearchParams({ section: cats[0].slug });
         }
@@ -202,7 +203,26 @@ const Dashboard = () => {
     }
   }
 
-  const sections = categories.map(c => ({
+  const targetOrder = [
+    'hoot content books',
+    'monthly letters',
+    'learning planners',
+    'school operations partner',
+    'teacher training'
+  ];
+
+  const sortedCategories = [...categories].sort((a, b) => {
+    const indexA = targetOrder.findIndex(name => a.name.toLowerCase().includes(name) || name.includes(a.name.toLowerCase()));
+    const indexB = targetOrder.findIndex(name => b.name.toLowerCase().includes(name) || name.includes(b.name.toLowerCase()));
+    
+    const valA = indexA === -1 ? 999 : indexA;
+    const valB = indexB === -1 ? 999 : indexB;
+    
+    if (valA !== valB) return valA - valB;
+    return a.name.localeCompare(b.name);
+  });
+
+  const sections = sortedCategories.map(c => ({
     id: c.slug,
     label: c.name,
     icon: ICON_MAP[c.icon] || <Folder size={20} />

@@ -19,8 +19,7 @@ const HeroSection = () => {
 
         <div className="hero-text-bubble">
           <h1 className="hero-title">
-            Empowering <span className="highlight-red">Teachers</span> to <br /> 
-            Inspire Young Minds
+            Built on Wonder. Rooted in Process
           </h1>
           
 

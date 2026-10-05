@@ -24,7 +24,7 @@ const CoreValues = () => {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="values-title">Our Values</h2>
+          <h2 className="values-title">Hoot Values</h2>
           
           <div className="values-icons-row">
             {values.map((val, idx) => (
