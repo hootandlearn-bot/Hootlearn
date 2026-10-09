@@ -89,9 +89,13 @@ const PdfViewer = ({ documentData, onClose }) => {
       {/* UNIFIED HEADER TOOLBAR */}
       <div className="pdf-reading-toolbar">
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          {viewMode === 'reading' && (
+          {viewMode === 'reading' ? (
             <button onClick={() => setViewMode('thumbnails')} className="pdf-back-btn">
               &larr; Overview
+            </button>
+          ) : (
+            <button onClick={onClose} className="pdf-back-btn">
+              &larr; Back
             </button>
           )}
           <h3 className="pdf-header-title">{documentData.title}</h3>

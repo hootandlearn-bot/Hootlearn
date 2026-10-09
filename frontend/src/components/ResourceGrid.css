@@ -112,6 +112,9 @@
   color: #94a3b8;
   display: block;
   margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rg-grid.list-view .rg-cat {
@@ -128,6 +131,11 @@
   color: #1e293b;
   margin-bottom: 12px;
   line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
 }
 
 .rg-grid.list-view .rg-title {

@@ -4,6 +4,7 @@
   height: 100vh;
   overflow: hidden;
   background: #ffffff;
+  font-family: 'Century Gothic', CenturyGothic, AppleGothic, sans-serif;
 }
 
 .dash-main {
@@ -65,7 +66,7 @@
 .dash-header-left h2 {
   font-size: 2rem;
   color: #1e3a8a;
-  font-family: 'Fredoka', sans-serif;
+  /* Inherits font-family from layout */
   margin-bottom: 4px;
 }
 

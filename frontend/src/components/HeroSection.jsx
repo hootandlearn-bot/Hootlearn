@@ -19,7 +19,8 @@ const HeroSection = () => {
 
         <div className="hero-text-bubble">
           <h1 className="hero-title">
-            Built on Wonder. Rooted in Process
+            Built on <span style={{ color: '#9333EA' }}>W</span>onder.<br/>
+            Rooted in <span style={{ color: '#9333EA' }}>P</span>rocess.
           </h1>
           
 
@@ -28,11 +29,11 @@ const HeroSection = () => {
           <div style={{ width: '100%', maxWidth: '500px', marginTop: '20px' }}>
             <img src="/assets/explore.jpeg" alt="Hands Mind Heart" className="hero-explore-img" style={{ width: '100%', height: 'auto' }} />
             <div style={{ display: 'flex', width: '100%', marginTop: '5px' }}>
-              <div style={{ flex: 1, textAlign: 'center', fontWeight: '800', fontSize: '1.2rem', color: '#9333EA', fontFamily: "'Fredoka', sans-serif" }}>Hands</div>
-              <div style={{ flex: 1, textAlign: 'center', fontWeight: '800', fontSize: '1.2rem', color: '#9333EA', fontFamily: "'Fredoka', sans-serif" }}>Mind</div>
-              <div style={{ flex: 1, textAlign: 'center', fontWeight: '800', fontSize: '1.2rem', color: '#9333EA', fontFamily: "'Fredoka', sans-serif" }}>Heart</div>
+              <div style={{ flex: 1, textAlign: 'center', fontWeight: '800', fontSize: '1.2rem', color: 'black', fontFamily: "'Fredoka', sans-serif" }}>Hands</div>
+              <div style={{ flex: 1, textAlign: 'center', fontWeight: '800', fontSize: '1.2rem', color: 'black', fontFamily: "'Fredoka', sans-serif" }}>Mind</div>
+              <div style={{ flex: 1, textAlign: 'center', fontWeight: '800', fontSize: '1.2rem', color: 'black', fontFamily: "'Fredoka', sans-serif" }}>Heart</div>
             </div>
-            <p style={{ color: '#A855F7', fontSize: '1.1rem', fontStyle: 'italic', textAlign: 'center', marginTop: '10px' }}>
+            <p style={{ color: 'black', fontSize: '1.1rem', fontStyle: 'italic', textAlign: 'center', marginTop: '10px' }}>
               Experiences that engage the whole child
             </p>
           </div>

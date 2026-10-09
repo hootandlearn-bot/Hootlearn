@@ -62,7 +62,7 @@ const seedCategories = async () => {
     { slug: 'content-books', name: 'Hoot Content Books', icon: 'BookOpen', allowDownload: false },
     { slug: 'planners', name: 'Learning Planners', icon: 'Calendar', allowDownload: false },
     { slug: 'letters', name: 'Monthly Letters', icon: 'Mail', allowDownload: true },
-    { slug: 'operations', name: 'School Operations Partner', icon: 'Briefcase', allowDownload: true },
+    { slug: 'operations', name: 'School Operations Partner', icon: 'Briefcase', allowDownload: false },
     { slug: 'videos', name: 'Hoot Videos', icon: 'Video', allowDownload: false },
     { slug: 'training', name: 'Teacher Training', icon: 'GraduationCap', allowDownload: false },
   ];
