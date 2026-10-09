@@ -19,8 +19,8 @@ const HeroSection = () => {
 
         <div className="hero-text-bubble">
           <h1 className="hero-title">
-            Built on <span style={{ color: '#9333EA' }}>W</span>onder.<br/>
-            Rooted in <span style={{ color: '#9333EA' }}>P</span>rocess.
+            Built on <span style={{ color: '#9333EA' }}>W</span>onder<br/>
+            Rooted in <span style={{ color: '#9333EA' }}>P</span>rocess
           </h1>
           
 
