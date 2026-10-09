@@ -118,7 +118,6 @@ const PdfViewer = ({ documentData, onClose }) => {
               &#11015; Download
             </a>
           )}
-          <button className="pdf-close-btn-viewer" onClick={onClose}>&#10005;</button>
         </div>
       </div>
 
