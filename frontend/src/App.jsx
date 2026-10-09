@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import './App.css';
 
@@ -14,20 +15,34 @@ import Footer from './components/Footer';
 // Pages
 import Dashboard from './pages/Dashboard';
 
-const Homepage = () => (
-  <>
-    <NewNavbar />
-    <main>
-      <HeroSection />
-      <FounderSection />
-      <SpecialFeatures />
-      <AboutSection />
-      <HootPrograms />
-      <CoreValues />
-    </main>
-    <Footer />
-  </>
-);
+const Homepage = () => {
+  useEffect(() => {
+    const preventAction = (e) => e.preventDefault();
+    document.addEventListener('contextmenu', preventAction);
+    document.addEventListener('copy', preventAction);
+    document.addEventListener('dragstart', preventAction);
+    return () => {
+      document.removeEventListener('contextmenu', preventAction);
+      document.removeEventListener('copy', preventAction);
+      document.removeEventListener('dragstart', preventAction);
+    };
+  }, []);
+
+  return (
+    <div className="no-select-global">
+      <NewNavbar />
+      <main>
+        <HeroSection />
+        <FounderSection />
+        <SpecialFeatures />
+        <AboutSection />
+        <HootPrograms />
+        <CoreValues />
+      </main>
+      <Footer />
+    </div>
+  );
+};
 
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
